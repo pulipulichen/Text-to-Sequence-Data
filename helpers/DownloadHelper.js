@@ -1,3 +1,5 @@
+/* global JSZipUtils */
+
 let DownloadHelper = {
   downloadAsFile: function (filename, text) {
     var element = document.createElement('a');
@@ -11,6 +13,24 @@ let DownloadHelper = {
 
     document.body.removeChild(element);
   },
+  downloadAsHTMLFile: function (filename, content) {
+    let title = filename
+    if (title.indexOf('.') > -1) {
+      title = title.slice(0, title.lastIndexOf('.')).trim()
+    }
+    
+    let template = `<html>
+  <head>
+    <title>${title}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  </head>
+  <body>
+    ${content}
+  </body>
+</html>`
+    this.downloadAsFile(filename, template)
+  },
   downloadFilesAsZip: function (filename, fileList, isAppendNumber) {
 
     /*
@@ -22,11 +42,11 @@ let DownloadHelper = {
 
     if (typeof (JSZipUtils) === 'undefined') {
       console.log('JSZipUtils is not loaded')
-      return
+      return false
     }
     if (Array.isArray(fileList) === false) {
       console.log('fileList is not Array')
-      return
+      return false
     }
 
     if (typeof (isAppendNumber) !== 'boolean') {
@@ -60,11 +80,11 @@ let DownloadHelper = {
           fileName = (i + 1) + '-' + fileName
         }
 
-        JSZipUtils.getBinaryContent(url, function (err, data) {
+        JSZipUtils.getBinaryContent(url, (err, data) => {
           if (err) {
             console.log('Problem happened when download img ' + (i + 1) + '/' + fileList.length + ': ' + url)
             loop(i)
-            return
+            return false
           } else {
             zip.file(fileName, data, {binary: true});
             //deferred.resolve(zip);
@@ -91,7 +111,26 @@ let DownloadHelper = {
     }
 
     loop(0)
-  }
+  },
+  downloadByURL: function (filename, url) {
+
+    if (typeof(filename) !== 'string') {
+      filename = url.slice(url.lastIndexOf('/') + 1)
+    }
+  
+    let link = document.createElement("a");
+    link.download = filename;
+    link.href = url;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    //delete link;
+  },
+  downlaod: function (filename, content) {
+    let blob = new Blob([content])
+    saveAs(blob, filename)
+  },
+  
 }
 
 window.DownloadHelper = DownloadHelper

@@ -5,6 +5,13 @@ let VueHelper = {
    * @param {String} key data key
    */
   mount: function (vue, key) {
+    if (Array.isArray(key)) {
+      key.forEach(k => {
+        this.mount(vue, k)
+      })
+      return
+    }
+    
     if (localStorage.getItem(key)) {
       try {
         vue[key] = localStorage.getItem(key)
@@ -21,6 +28,13 @@ let VueHelper = {
    * @param {String} key data key
    */
   persist: function (vue, key) {
+    if (Array.isArray(key)) {
+      key.forEach(k => {
+        this.persis(vue, k)
+      })
+      return this
+    }
+    
     localStorage.setItem(key, vue[key])
     return this
   }

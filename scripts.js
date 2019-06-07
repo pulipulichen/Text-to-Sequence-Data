@@ -1,13 +1,17 @@
+/* global VueHelper, Vue, DownloadHelper, UploadHelper */
+
 Vue.config.productionTip = false
 var app = new Vue({
   el: '#app',
   data: {
     input: '',
     fileType: 'ods',
-    uploadFileName: ''
+    uploadFilename: '',
+    configExportColHeaders: ["消費日","入帳日","說明","地區","兌換日","原幣金額","新台幣金額"],
+    configMountData: ['fileType']
   },
   mounted() {
-    VueHelper.mount(this, 'fileType')
+    VueHelper.mount(this, this.configMountData)
   },
   computed: {
     output: function () {
@@ -151,14 +155,13 @@ var app = new Vue({
     //  this.input = data
     //})
     
-    FileHelper.initDropUpload((e) => {
-      //console.log(e)
-      this.upload(e)
+    UploadHelper.initDropUpload((filename, content) => {
+      this.upload(filename, content)
     })
   },
   methods: {
     persist: function () {
-      VueHelper.persist(this, 'fileType')
+      VueHelper.persist(this, this.configMountData)
     },
     reset: function () {
       this.input = ''
@@ -167,12 +170,18 @@ var app = new Vue({
       ClipboardHelper.copyRichFormat(this.output)
     },
     triggerUpload: function (e) {
-      FileHelper.triggerUpload(e)
+      UploadHelper.triggerUpload(e)
     },
-    upload: function (e) {
-      FileHelper.upload(e, true, (result) => {
-        this.input = result[0]
-      })
+    upload: function (filename, content) {
+      if (typeof(filename) === 'object') {
+        UploadHelper.upload(filename, true, (filename, content) => {
+          this.upload(filename, content)
+        })
+      }
+      else {
+        this.input = content
+        this.uploadFilename = filename
+      }
     },
     download: function () {
       let filetypeExt = this.fileType
@@ -183,7 +192,7 @@ var app = new Vue({
       if (filetypeExt === 'csv') {
         let lines = []
         
-        lines.push('消費日,入帳日,說明,地區,兌換日,原幣金額,新台幣金額')
+        lines.push(this.configExportColHeaders.join(','))
         
         $(content).find('tbody tr').each((i, tr) => {
           let line = []
@@ -203,17 +212,7 @@ var app = new Vue({
         DownloadHelper.downloadAsFile(filename, lines.join('\n'))
       }
       else if (filetypeExt === 'html') {
-        let template = `<html>
-  <head>
-    <title>${this.outputTitle}</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head>
-  <body>
-    ${content}
-  </body>
-</html>`
-        DownloadHelper.downloadAsFile(filename, template)
+        DownloadHelper.downloadAsFile(filename, content)
       }
       else if (filetypeExt === 'ods') {
         
@@ -221,7 +220,7 @@ var app = new Vue({
         data[this.outputTitle] = []
         let lines = data[this.outputTitle]
         
-        let fieldList = ["消費日","入帳日","說明","地區","兌換日","原幣金額","新台幣金額"]
+        let fieldList = this.configExportColHeaders
         $(content).find('tbody tr').each((i, tr) => {
           let line = {}
           $(tr).children().each((i, td) => {
@@ -236,9 +235,4 @@ var app = new Vue({
       }
     }
   }
-  /*
-  methods: {
-    
-  }
-  */
 })

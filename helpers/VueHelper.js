@@ -30,7 +30,7 @@ let VueHelper = {
   persist: function (vue, key) {
     if (Array.isArray(key)) {
       key.forEach(k => {
-        this.persis(vue, k)
+        this.persist(vue, k)
       })
       return this
     }

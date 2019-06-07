@@ -47,7 +47,7 @@ let TextToSequenceData = function (text, options) {
     }
   })
   
-  console.log(output)
+  //console.log(output)
   
   return output
 }

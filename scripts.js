@@ -76,29 +76,26 @@ let app = {
       let filetypeExt = this.fileType
       
       let filename = this.outputTitle + '.' + filetypeExt
-      let content = this.output
       
       if (filetypeExt === 'csv') {
         DownloadHelper.downloadAsFile(filename, this.outputContent)
       }
       else if (filetypeExt === 'html') {
-        DownloadHelper.downloadAsHTMLFile(filename, content)
+        let html = CSVHelper.arrayToCSVTableHTML(this.output)
+        DownloadHelper.downloadAsHTMLFile(filename, html)
       }
       else if (filetypeExt === 'ods') {
         
         let data = {}
         data[this.outputTitle] = []
-        let lines = data[this.outputTitle]
-        
         let fieldList = this.configExportColHeaders
-        $(content).find('tbody tr').each((i, tr) => {
+        this.output.forEach((row) => {
           let line = {}
-          $(tr).children().each((i, td) => {
-            let text = td.innerText
-            let field = fieldList[i]
-            line[field] = text
+          row.forEach((col, i) => {
+            let fieldName = fieldList[i]
+            line[fieldName] = col
           })
-          lines.push(line)
+          data[this.outputTitle].push(line)
         })
         
         xlsx_helper_ods_download(filename, data)

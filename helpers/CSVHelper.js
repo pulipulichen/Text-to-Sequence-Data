@@ -29,8 +29,23 @@ let CSVHelper = {
     
     return output.join('\n')
   },
-  arrayToCSVTable: function (headings, ary) {
+  arrayToCSVTableHTML: function (headings, ary) {
+    let table = $(`<table border="1"><thead><tr></tr></thead><tbody></tbody></table>`)
     
+    let theadTr = table.find('thead > tr')
+    headings.forEach(h => {
+      theadTr.append(`<th>${h}</th>`)
+    })
+    
+    let tbody = table.find('tbody')
+    ary.forEach(row => {
+      let tr = $('<tr></tr>').appendTo(tbody)
+      row.forEach(col => {
+        tr.append(`<td>${col}</td>`)
+      })
+    })
+    
+    return table.prop('outerHTML')
   }
 }
 

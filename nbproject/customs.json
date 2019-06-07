@@ -1,0 +1,9 @@
+{
+  "elements": {},
+  "attributes": {
+    "ref": {},
+    "v-on:click": {},
+    "v-on:change": {},
+    "v-model": {}
+  }
+}

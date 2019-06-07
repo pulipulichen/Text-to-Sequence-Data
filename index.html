@@ -25,6 +25,7 @@
     <script src="helpers/DateHelper.js"></script>
     <script src="helpers/VueHelper.js"></script>
     <script src="helpers/ClipboardHelper.js"></script>
+    <script src="helpers/CSVHelper.js"></script>
     
     <link rel="stylesheet/less" type="text/css" href="helpers/UploadHelper.less" />
     <script src="helpers/UploadHelper.js"></script>
@@ -36,6 +37,9 @@
     <script src="vendors/less/less.min.js" ></script>
     
     <link rel="icon" type="image/png" href="icon.png" />
+    
+    <!-- Libs -->
+    <script src="libs/TextToSequenceData.js"></script>
   </head>
   <body>
     <div id="app"
@@ -109,7 +113,7 @@
               <input type="text" v-model="outputTitle" disabled="disabled" />
             </div>
             
-            <textarea v-model="output" class="output"></textarea>
+            <textarea v-model="outputContent" class="output"></textarea>
             
           </div>
         </div>
